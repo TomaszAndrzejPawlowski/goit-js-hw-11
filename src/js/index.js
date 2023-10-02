@@ -13,7 +13,7 @@ moreBtn.style.display = "none";
 
 const apiKey = `39664886-734d85d446af9c48bd55da1f3`;
 // const userInput = searchForm.currentTarget.value;
-const pageCount = 1;
+let pageCount = 1;
 let userInput = ``;
 const url = `https://pixabay.com/api/`;
 
@@ -31,11 +31,22 @@ const options = {
 
 const fetchResults = async () => {
   try {
-    const response = await axios(url, options)
-    console.log(response)
-    console.log("działa")
+    const response = await axios(url, options);
+    console.log(response);
+    console.log(response.data.hits);
+  
+    if (response.data.hits === 0) {
+      Notiflix.Notify.faliure("Sorry, there are no images matching your search query. Please try again.");
+    } else {
+      createGallery(response.data.hits);
+      moreBtn.style.display = "block";
+    }
+    if (pageCount === 1) {
+      Notiflix.Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+    }
+
   } catch {
-    Notiflix.Notify.faliure(error)
+    Notiflix.Notify.faliure(error);
   }
   
 }
@@ -65,10 +76,20 @@ const createGallery = images => {
   lightbox.refresh();
 }
 
+
+
 searchForm.addEventListener("submit", event => {
   event.preventDefault();
   const inputValue = event.currentTarget.elements.searchQuery.value;
   userInput = inputValue;
+  console.log(userInput)
   fetchResults();
   console.log(userInput)
+  
+})
+
+
+moreBtn.addEventListener("click", event => {
+  pageCount++;
+  fetchResults();
 })
