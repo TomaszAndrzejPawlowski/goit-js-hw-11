@@ -11,44 +11,45 @@ const searchForm = document.querySelector("#search-form")
 
 moreBtn.style.display = "none";
 
+const clearGallery = ``;
 const apiKey = `39664886-734d85d446af9c48bd55da1f3`;
-// const userInput = searchForm.currentTarget.value;
-let pageCount = 1;
-let userInput = ``;
 const url = `https://pixabay.com/api/`;
 
 const options = {
   params: {
     key: apiKey,
-    q: userInput,
+    q: ``,
     image_type: "photo",
     orientation: "horizontal",
     safesearch: true,
-    page: pageCount,
+    page: 1,
     per_page: 40
   }
 }
 
 const fetchResults = async () => {
   try {
+    if (options.params.q === ``) {
+      Notiflix.Notify.info("Input cannot be empty!")
+      return
+    }
     const response = await axios(url, options);
     console.log(response);
-    console.log(response.data.hits);
-  
+    // console.log(response.data.hits);
+    
     if (response.data.hits === 0) {
       Notiflix.Notify.faliure("Sorry, there are no images matching your search query. Please try again.");
     } else {
       createGallery(response.data.hits);
       moreBtn.style.display = "block";
     }
-    if (pageCount === 1) {
+    if (options.params.page === 1) {
       Notiflix.Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
     }
 
   } catch {
     Notiflix.Notify.faliure(error);
   }
-  
 }
 
 const createGallery = images => {
@@ -76,20 +77,20 @@ const createGallery = images => {
   lightbox.refresh();
 }
 
-
-
 searchForm.addEventListener("submit", event => {
   event.preventDefault();
+  gallery.innerHTML = clearGallery;
+  options.params.page = 1;
   const inputValue = event.currentTarget.elements.searchQuery.value;
-  userInput = inputValue;
-  console.log(userInput)
-  fetchResults();
-  console.log(userInput)
+  options.params.q = inputValue;
   
+  fetchResults();
+  // console.log(userInput);
+  console.log(options.params.q)
 })
 
-
 moreBtn.addEventListener("click", event => {
-  pageCount++;
+  options.params.page++;
+  console.log(options.params.page)
   fetchResults();
 })
