@@ -57,7 +57,7 @@ const fetchResults = async () => {
       });
     }
   } catch {
-    Notiflix.Notify.faliure(error);
+    Notiflix.Notify.faliure("error");
   }
 }
 
