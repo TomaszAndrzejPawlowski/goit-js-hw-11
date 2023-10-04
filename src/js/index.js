@@ -35,9 +35,8 @@ const fetchResults = async () => {
     }
     const response = await axios(url, options);
     console.log(response);
-    // console.log(response.data.hits);
-    
-    if (response.data.hits === 0) {
+    console.log(response.data.hits.length);
+    if (response.data.hits.length === 0) {
       Notiflix.Notify.faliure("Sorry, there are no images matching your search query. Please try again.");
     } else {
       createGallery(response.data.hits);
@@ -46,7 +45,17 @@ const fetchResults = async () => {
     if (options.params.page === 1) {
       Notiflix.Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
     }
-
+    if (gallery.childNodes.length >= response.data.totalHits) {
+      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.")
+      moreBtn.style.display = "none";
+    }
+    if (gallery.childNodes.length > options.params.per_page) {
+      const { height: cardHeight } = gallery.firstElementChild.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth",
+      });
+    }
   } catch {
     Notiflix.Notify.faliure(error);
   }
@@ -83,14 +92,10 @@ searchForm.addEventListener("submit", event => {
   options.params.page = 1;
   const inputValue = event.currentTarget.elements.searchQuery.value;
   options.params.q = inputValue;
-  
   fetchResults();
-  // console.log(userInput);
-  console.log(options.params.q)
 })
 
-moreBtn.addEventListener("click", event => {
+moreBtn.addEventListener("click", () => {
   options.params.page++;
-  console.log(options.params.page)
   fetchResults();
 })
