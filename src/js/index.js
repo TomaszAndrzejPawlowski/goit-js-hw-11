@@ -10,27 +10,16 @@ const gallery = document.querySelector(".gallery");
 const searchForm = document.querySelector("#search-form")
 moreBtn.style.display = "none";
 const clearGallery = ``;
-const apiKey = `39664886-734d85d446af9c48bd55da1f3`;
-const url = `https://pixabay.com/api/`;
+let inputValue = ``;
+let currentPage = 1;
 
-const options = {
-  params: {
-    key: apiKey,
-    q: ``,
-    image_type: "photo",
-    orientation: "horizontal",
-    safesearch: true,
-    page: 1,
-    per_page: 40
-  }
-}
 const galleryFunctionality = async () => {
   try {
     if (options.params.q === ``) {
       Notiflix.Notify.info("Input cannot be empty!")
       return
     }
-    const response = await fetchResults(url, options);
+    const response = await fetchResults(inputValue, currentPage);
     if (response.data.hits.length === 0) {
       Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
     } else {
@@ -52,7 +41,9 @@ const galleryFunctionality = async () => {
       });
     }
   } catch (error) {
-    Notiflix.Notify.failure(error);
+    Notiflix.Notify.failure("An error occured...");
+    console.log(inputValue)
+    console.log(currentPage)
   }
 }
 const createGallery = images => {
@@ -83,12 +74,12 @@ const createGallery = images => {
 searchForm.addEventListener("submit", event => {
   event.preventDefault();
   gallery.innerHTML = clearGallery;
-  options.params.page = 1;
-  const inputValue = event.currentTarget.elements.searchQuery.value;
-  options.params.q = inputValue;
+  currentPage = 1;
+  inputValue = event.currentTarget.elements.searchQuery.value;
+  
   galleryFunctionality();
 })
 moreBtn.addEventListener("click", () => {
-  options.params.page++;
+  currentPage++;
   galleryFunctionality();
 })
