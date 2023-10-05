@@ -74,6 +74,8 @@ img {
     font-weight: 700;
     color: #fff;
     background-color: #4545b7;
+    border-radius: 4px;
+    margin-bottom: 30px;
 }
 .load-more:hover,
 .load-more:focus {
