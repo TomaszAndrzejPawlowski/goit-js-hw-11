@@ -15,25 +15,25 @@ let currentPage = 1;
 
 const galleryFunctionality = async () => {
   try {
-    if (options.params.q === ``) {
+    if (inputValue === ``) {
       Notiflix.Notify.info("Input cannot be empty!")
       return
     }
     const response = await fetchResults(inputValue, currentPage);
-    if (response.data.hits.length === 0) {
+    if (response.hits.length === 0) {
       Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
     } else {
-        createGallery(response.data.hits);
+        createGallery(response.hits);
         moreBtn.style.display = "block";
-        if (options.params.page === 1) {
-          Notiflix.Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+        if (currentPage === 1) {
+          Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
       }
-        if (gallery.childNodes.length >= response.data.totalHits) {
+        if (gallery.childNodes.length >= response.totalHits) {
           Notiflix.Notify.info("We're sorry, but you've reached the end of search results.")
           moreBtn.style.display = "none";
       }
     }
-    if (gallery.childNodes.length > options.params.per_page) {
+    if (currentPage >= 2) {
       const { height: cardHeight } = gallery.firstElementChild.getBoundingClientRect();
       window.scrollBy({
         top: cardHeight * 2,
@@ -42,8 +42,6 @@ const galleryFunctionality = async () => {
     }
   } catch (error) {
     Notiflix.Notify.failure("An error occured...");
-    console.log(inputValue)
-    console.log(currentPage)
   }
 }
 const createGallery = images => {
